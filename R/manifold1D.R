@@ -1,10 +1,10 @@
-mod <- Module("ManifoldOptim_module", PACKAGE = "ManifoldOptim")
-mani.params <- get.manifold.params(IsCheckParams = TRUE)
-#' @import ManifoldOptim
-#' @import methods
 ##################################################
 # Manifold   function 1D                         #
 ##################################################
+#' @import ManifoldOptim
+#' @import methods
+mod <- Module("ManifoldOptim_module", PACKAGE = "ManifoldOptim")
+mani.params <- get.manifold.params(IsCheckParams = TRUE)
 
 fun1D_mfd <- function(M, U) {
   n <- dim(M)[2]
@@ -97,3 +97,4 @@ manifold1D <- function(M, U, u, params=NULL){
   } else { Ghat <- diag(p) }
   return(Ghat)
 }
+

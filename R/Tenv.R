@@ -1,9 +1,36 @@
+#' @title Tensor response envelope estimator
+#' @description This function gives the tensor envelope estimator for tensor response regression.
+#'
+#' @param  Xn The predictor matrix of dimension \eqn{p \times n}.
+#' @param Yn The response tensor instance \eqn{ r_1\times r_2\times \cdots \times r_m \times n}, where \eqn{n} is the sample size.
+#' @param u The dimension of envelope subspace. \eqn{u=(u_1,\cdots,u_m)}.
+#' @param opts The option structure for Feasi. See function \code{OptimballGBB1D}.
+#'
+#' @return
+#' \describe{
+#'   \item{Btil}{The ordinary least square estimator (OLS).}
+#'   \item{Bhat}{The envelope based estimator.}
+#'  \item{PGamma}{The projection matrix onto envelope subspace.}
+#' }
+#'
+#' @references Li, L., & Zhang, X. (2017). Parsimonious tensor response regression. Journal of the American Statistical Association, 112(519), 1131-1146.
 
+#' @name Tenv-deprecated
+#' @usage Tenv(Xn, Yn, u, opts=NULL)
+#' @seealso \code{\link{TRES-deprecated}}
+#' @keywords internal
+NULL
+
+#' @rdname TRES-deprecated
+#' @section \code{Tenv}:
+#' For \code{Tenv}, use \code{\link{TRR}} with \code{method = "1D"}.
+#'
 #' @export
 #' @import rTensor
 #' @import MASS
 
-Tenv <- function(Yn, Xn, u, opts=NULL) {
+Tenv <- function(Xn, Yn, u, opts=NULL){
+  .Deprecated("TRR", package = "TRES")
   ss <- dim(Yn)
   len <- length(ss)
   n <- ss[len]

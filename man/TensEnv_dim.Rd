@@ -8,7 +8,7 @@ Envelope dimension selection for tensor response regression
 This function use the 1D-BIC criterion by by Zhang, X., & Mai, Q. (2018) to select envelope dimensions in tensor response regression.
 }
 \usage{
-TensEnv_dim(Yn, Xn, multiD=1, bic_max=10, opts=NULL)
+TensEnv_dim(Xn, Yn, multiD=1, bic_max=10, opts=NULL)
 }
 
 \arguments{
@@ -22,5 +22,40 @@ TensEnv_dim(Yn, Xn, multiD=1, bic_max=10, opts=NULL)
 
 \value{
 \item{u}{The envelope dimension of \eqn{(u_1, u_2,\cdots,u_m)}.}
+}
+
+\examples{
+rm(list=ls())
+
+# The dimension of response
+r <- c(10, 10, 10)
+# The envelope dimensions u.
+u <- c(2, 2, 2)
+# The dimension of predictor
+p <- 5
+# The sample size
+n <- 100
+
+# Simulate the data with \code{\link{TRR_sim}}.
+dat <- TRR_sim(r = r, p = p, u = u, n = n)
+Xn <- dat$Xn
+Yn <- dat$Yn
+
+TensEnv_dim(Xn, Yn) # The estimated envelope dimensions are the same as u.
+
+## Use dataset bat, but it is time-consuming
+\dontrun{
+  data("bat")
+  Xn <- bat$Xn
+  Yn <- bat$Yn
+  # check the dimension of Yn
+  dim(Yn)
+  # use 32 as the maximal envelope dimension
+  TensEnv_dim(Xn, Yn, bic_max=32)
+}
+}
+
+\seealso{
+\code{\link{TRR_sim}}.
 }
 

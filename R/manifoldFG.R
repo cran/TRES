@@ -1,10 +1,11 @@
 ##################################################
 # Manifold   function full                       #
 ##################################################
-mod <- Module("ManifoldOptim_module", PACKAGE = "ManifoldOptim")
-mani.params <- get.manifold.params(IsCheckParams = TRUE)
 #' @import ManifoldOptim
 #' @import methods
+mod <- Module("ManifoldOptim_module", PACKAGE = "ManifoldOptim")
+mani.params <- get.manifold.params(IsCheckParams = TRUE)
+
 FGfun_mfd <- function(M, U, u) {
   n <- dim(M)[2]
   mw <- function(w) { matrix(w, n, u) }
