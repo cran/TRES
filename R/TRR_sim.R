@@ -1,6 +1,6 @@
-#' Generate simulation data for TRR
+#' Generate simulation data for tensor response regression (TRR)
 #'
-#' This function is used to generate simulation data used in Tensor Response Regression.
+#' This function is used to generate simulation data used in tensor response regression.
 #'
 #' The tensor response regression model is of the form,
 #' \deqn{\mathbf{Y} = \mathbf{B}\bar{\times}_{(m+1)}\mathbf{X} +\boldsymbol{\varepsilon}}
@@ -19,14 +19,13 @@
 #' @param u The structural dimension of envelopes at each mode, a vector with the same length as r.
 #' @param n The sample size.
 #' @return
-#' \describe{
 #' \item{Xn}{The predictor of dimension \eqn{p\times n}}
 #' \item{Yn}{The response of dimension \eqn{r_1\times \cdots\times r_m \times n}}
 #' \item{Gamma}{The envelope subspace basis of dimension \eqn{r_k \times u_k, \ k=1,\ldots,m}}
-#' \item{Bhat}{The coefficient tensor of dimension \eqn{r_1\times \cdots\times r_m \times p}}
+#' \item{coefficients}{The tensor coefficients of dimension \eqn{r_1\times \cdots\times r_m \times p}}
 #' \item{Sigma}{The covariance matrix of error}
 #' \item{p, r, u}{The input \code{p,r,u}}
-#' }
+#'
 #' @examples
 #' r <- c(10, 10, 10)
 #' u <- c(2, 2, 2)
@@ -69,6 +68,6 @@ TRR_sim <- function(r, p, u, n){
   Epsilon <- rTensor::ttl(Epsilon, Sigsqrtm, ms=1:m)
   Yn <- Epsilon + rTensor::ttm(B, t(Xn), m+1)
 
-  output <- list(Xn = Xn, Yn = Yn, Gamma = Gamma, Bhat = B, Sigma = Sig, p = p, r = r, u = u)
+  output <- list(Xn = Xn, Yn = Yn, Gamma = Gamma, coefficients = B, Sigma = Sig, p = p, r = r, u = u)
   output
 }

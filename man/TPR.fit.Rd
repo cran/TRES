@@ -1,14 +1,15 @@
-\name{TPR}
+\name{TPR.fit}
+\alias{TPR.fit}
 \alias{TPR}
 
 \title{
 Tensor Predictor Regression
 }
 \description{
-This function is used for estimation of tensor predictor regression. The available method including standard OLS type estimation, PLS type of estimation as well as envelope estimation with 1D and ECD approaches.
+This function is used for estimation of tensor predictor regression. The available method including standard OLS type estimation, PLS type of estimation as well as envelope estimation with FG, 1D and ECD approaches.
 }
 \usage{
-TPR(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'),
+TPR.fit(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'),
     u=NULL, Gamma_init=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -22,9 +23,9 @@ TPR(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'),
   \item{\code{"FG"}}: Envelope estimation with full Grassmannian (FG) algorithm.
   \item{\code{"1D"}}: Envelope estimation with one dimenaional optimization approaches by 1D algorithm.
   \item{\code{"ECD"}}: Envelope estimation with one dimenaional optimization approaches by ECD algorithm.
-  \item{\code{"PLS"}}: The SIMPLS-type estimation without mannifold optimization.
+  \item{\code{"PLS"}}: The SIMPLS-type estimation without manifold optimization.
 }
-  \item{Gamma_init}{A list specifying the initial estimation of envelope subspace basis for "FG" method. If unspecified, use the estimation from "1D" algorithm.}
+  \item{Gamma_init}{A list specifying the initial envelope subspace basis for "FG" method. If unspecified, use the estimation from "1D" algorithm.}
 }
 
 \value{
@@ -32,7 +33,7 @@ TPR(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'),
 \item{Yn}{The input response matrix.}
 \item{method}{The method used.}
 \item{coefficients}{The estimation of regression coefficient tensor.}
-\item{Gamma_hat}{The estimation of envelope subspace basis.}
+\item{Gamma}{The estimation of envelope subspace basis.}
 \item{Sig}{A matrix lists of \eqn{\boldsymbol{\Sigma}_\mathrm{xk}}, where \eqn{\boldsymbol{\Sigma}_\mathrm{x}=\boldsymbol{\Sigma}_\mathrm{xm} \otimes \cdots \otimes \boldsymbol{\Sigma}_\mathrm{x1}}.}
 \item{fitted.values}{The fitted response matrix.}
 \item{residuals}{The residuals matrix.}
@@ -58,11 +59,11 @@ n <- 200
 dat <- TPR_sim(p = p, r = r, u = u, n = n)
 Xn <- dat$Xn
 Yn <- dat$Yn
-B <- dat$Bhat
+B <- dat$coefficients
 
-res_std = TPR(Xn, Yn, method="standard")
-res_FG = TPR(Xn, Yn, u, method="FG")
-res_pls = TPR(Xn, Yn, u, method="PLS")
+res_std = TPR.fit(Xn, Yn, method="standard")
+res_FG = TPR.fit(Xn, Yn, u, method="FG")
+res_pls = TPR.fit(Xn, Yn, u, method="PLS")
 
 rTensor::fnorm(B-stats::coef(res_std))
 rTensor::fnorm(B-stats::coef(res_FG))
@@ -73,7 +74,7 @@ rTensor::fnorm(B-stats::coef(res_pls))
   data("square")
   Xn <- square$Xn
   Yn <- square$Yn
-  res_std <- TPR(Xn, Yn, method="standard")
+  res_std <- TPR.fit(Xn, Yn, method="standard")
   }
 }
 

@@ -4,7 +4,7 @@
 # This function gives all the estimation of tensor predictor regression
 # The tensor predictor should be 2-dimensional or 3-dimensional
 
-TPR <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, Gamma_init=NULL) {
+TPR.fit <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, Gamma_init=NULL) {
   cl <- match.call()
   method <- match.arg(method)
   if(!is.matrix(Yn)){
@@ -160,7 +160,7 @@ TPR <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, 
         }else{
           init <- Gamma_init[[i]]
         }
-        Gamma1[[i]] <- OptStiefelGBB(init, opts=NULL, FGfun, Sigx[[i]], Uk)$X
+        Gamma1[[i]] <- OptStiefelGBB(init, opts=NULL, FGfun, Sigx[[i]], Uk)$Gamma
         tmp8 <- t(Gamma1[[i]]) %*% Sigx[[i]] %*% Gamma1[[i]]
         PGamma[[i]] <- Gamma1[[i]] %*% solve(tmp8) %*% t(Gamma1[[i]]) %*% Sigx[[i]]
       }
@@ -183,7 +183,7 @@ TPR <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, 
   tp2 <- matrix(Xn_old@data, c(prod(p), n))
   fitted.values <- t(tp1) %*% tp2
   residuals <- Yn_old - fitted.values
-  output <- list(Xn=Xn_old, Yn=Yn_old, method = method, coefficients=Bhat, Gamma_hat=Gamma1, Sigx=Sigx, fitted.values = fitted.values, residuals=residuals)
+  output <- list(Xn=Xn_old, Yn=Yn_old, method = method, coefficients=Bhat, Gamma=Gamma1, Sigx=Sigx, fitted.values = fitted.values, residuals=residuals)
   class(output) <- "Tenv"
   output$call <- cl
   output

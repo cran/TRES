@@ -4,17 +4,17 @@
 Envelope dimension selection based on 1D-BIC
 }
 \description{
-This function selects envelope subspace dimension use 1D-BIC by Zhang, X., & Mai, Q. (2018). The constrained optimization in the 1D algorithm is based on the method proposed by Wen and Yin (2013).
+This function selects envelope subspace dimension using 1D-BIC proposed by Zhang, X., & Mai, Q. (2018). The constrained optimization in the 1D algorithm is based on the method proposed by Wen and Yin (2013).
 }
 \usage{
-ballGBB1D_bic(M, U, n, multiD=1, bic_max=10, opts=NULL)
+ballGBB1D_bic(M, U, n, multiD=1, maxdim=10, opts=NULL)
 }
 \arguments{
 \item{M}{M matrix in the envelope objective function. A \eqn{p}-by-\eqn{p} positive semi-definite matrix.}
  \item{U}{U matrix in the envelope objective function. A \eqn{p}-by-\eqn{p} positive semi-definite matrix.}
  \item{n}{Sample size.}
- \item{multiD}{A constant, see Zhang, X., & Mai, Q. (2018), the default value is 1.}
- \item{bic_max}{The maximum dimension to consider, \code{bic_max} is smaller than \eqn{p}, the default value is 10.}
+ \item{multiD}{A constant, the default value is 1.}
+ \item{maxdim}{The maximum dimension to consider, \code{maxdim} is smaller than \eqn{p}, the default value is 10.}
  \item{opts}{Option structure for GBB algorithm. See function \code{OptStiefelGBB}.}
 }
 

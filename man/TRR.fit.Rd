@@ -1,4 +1,5 @@
-\name{TRR}
+\name{TRR.fit}
+\alias{TRR.fit}
 \alias{TRR}
 
 \title{
@@ -8,7 +9,7 @@ Tensor response regression
 This function is used for estimation of tensor response regression. The available method including standard OLS type estimation, PLS type of estimation as well as envelope estimation with FG, 1D and ECD approaches.
 }
 \usage{
-TRR(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'),
+TRR.fit(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'),
     u=NULL, Gamma_init=NULL)
 }
 
@@ -24,7 +25,7 @@ TRR(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'),
 \item{\code{"ECD"}}: Envelope estimation with one dimensional optimization approaches by ECD algorithm.
 \item{\code{"PLS"}}: The SIMPLS-type estimation without manifold optimization.
 }
-  \item{Gamma_init}{A list specifying the initial estimation of envelope subspace basis for "FG" method. If unspecified, use the estimation from "1D" algorithm.}
+  \item{Gamma_init}{A list specifying the initial envelope subspace basis for "FG" method. If unspecified, use the estimation from "1D" algorithm.}
 
 }
 
@@ -33,7 +34,7 @@ TRR(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'),
 \item{Yn}{The input response tensor.}
 \item{method}{The method used.}
 \item{coefficients}{The estimation of regression coefficient tensor.}
-\item{Gamma_hat}{The estimation of envelope subspace basis.}
+\item{Gamma}{The estimation of envelope subspace basis.}
 \item{Sig}{A matrix lists of \eqn{\boldsymbol{\Sigma}_k}, where \eqn{\boldsymbol{\Sigma}=\boldsymbol{\Sigma}_m \otimes \cdots \otimes \boldsymbol{\Sigma}_1}.}
 \item{fitted.values}{The fitted response tensor.}
 \item{residuals}{The residuals tensor.}
@@ -55,13 +56,13 @@ n <- 100
 dat <- TRR_sim(r = r, p = p, u = u, n = n)
 Xn <- dat$Xn
 Yn <- dat$Yn
-B <- dat$Bhat
+B <- dat$coefficients
 
-res_std <- TRR(Xn, Yn, method="standard")
-res_fg <- TRR(Xn, Yn, u, method="FG")
-res_1D <- TRR(Xn, Yn, u, method="1D")
-res_pls <- TRR(Xn, Yn, u, method="PLS")
-res_ECD <- TRR(Xn, Yn, u, method="ECD")
+res_std <- TRR.fit(Xn, Yn, method="standard")
+res_fg <- TRR.fit(Xn, Yn, u, method="FG")
+res_1D <- TRR.fit(Xn, Yn, u, method="1D")
+res_pls <- TRR.fit(Xn, Yn, u, method="PLS")
+res_ECD <- TRR.fit(Xn, Yn, u, method="ECD")
 
 rTensor::fnorm(B-stats::coef(res_std))
 rTensor::fnorm(B-stats::coef(res_fg))
@@ -73,7 +74,7 @@ rTensor::fnorm(B-stats::coef(res_ECD))
 data("bat")
 Xn <- bat$Xn
 Yn <- bat$Yn
-res_std <- TRR(Xn, Yn, method="standard")
+res_std <- TRR.fit(Xn, Yn, method="standard")
 }
 
 \seealso{

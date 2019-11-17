@@ -9,12 +9,13 @@
  \item{Xn}{A \eqn{32 \times 32 \times 200} tensor}
  \item{Yn}{A \eqn{1 \times 200} matrix}
  \item{coefficients}{A \eqn{32\times 32 \times 1} tensor with the square pattern}
+ \item{Gamma}{Two envelope basis: 32\eqn{\times}2 matrices}
 }}
 \usage{
 data(square)
 }
 \description{
-Simulated data used in Tensor Predictor Regression. The pattern of coefficient is a square.
+Simulated data used in tensor predictor regression (TPR). The pattern of coefficient is a square.
 }
 \examples{
 data("square")

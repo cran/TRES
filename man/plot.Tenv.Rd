@@ -4,33 +4,29 @@
 \alias{plot.Tenv}
 \title{Plot coefficients and p-value for Tenv object.}
 \usage{
-\method{plot}{Tenv}(x, thrd = 0.05, ask = TRUE,
+\method{plot}{Tenv}(x, thrd = 0.05,
   main = c(paste0("Coefficient plot ", "(", x$method, ")"),
   paste0("P value plot ", "(", x$method, ")")), ...)
 }
 \arguments{
-\item{x}{An object of class "Tenv", as from \code{\link{TPR}} or \code{\link{TRR}}.}
+\item{x}{An object of class "Tenv", as from \code{\link{TPR.fit}} or \code{\link{TRR.fit}}.}
 
 \item{thrd}{Significant level of p-value. Default is 0.05.}
-
-\item{ask}{Logical; if TRUE, the user is asked before the p-value plot. (only used for the object from \code{\link{TRR}}).}
 
 \item{main}{Title to each plot.}
 
 \item{...}{Other parameters to be passed through to plotting functions.}
 }
 \description{
-Plot method for object returned from \code{\link{TRR}} and \code{\link{TPR}} functions.
+Plot method for object returned from \code{\link{TRR.fit}} and \code{\link{TPR.fit}} functions.
 }
 \details{
-\code{coef(x)} must be a two-way tensor or a matrix. For the object return from \code{\link{TPR}},
-only the coefficients plot is displayed. But for the object return
-from \code{\link{TRR}}, both the coefficients plot and p-value plot is displayed.
+\code{coef(x)} must be a two-way tensor or a matrix. For the object return from \code{\link{TPR.fit}}, only the coefficients plot is displayed. But for the object return from \code{\link{TRR.fit}}, both the coefficients plot and p-value plot is displayed.
 }
 \examples{
  data("bat")
  Xn <- bat$Xn
  Yn <- bat$Yn
- fit <- TRR(Xn, Yn, method="standard")
- plot(fit, ask=FALSE)
+ fit <- TRR.fit(Xn, Yn, method="standard")
+ plot(fit)
 }

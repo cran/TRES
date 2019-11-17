@@ -2,24 +2,27 @@
 \alias{ttt}
 
 \title{
-Inner product of tensor X and Y
+Inner product of two tensors
 }
 \description{
-\code{ttt(X,Y,dims)} computes the inner product of tensors \code{X} and \code{Y} in the
-dimensions specified by the vector \code{dims}. The sizes of the dimensions specified by \code{dims} must match, which is \code{size(X, dims)} must equal \code{size(Y, dims)}.
+Computes the inner product of two tensors on the specified modes.
 }
 \usage{
-ttt(X, Y, dims)
+ttt(X, Y, ms)
 }
 
 \arguments{
   \item{X}{A tensor instance.}
   \item{Y}{A tensor instance.}
-  \item{dims}{The indices of the modes to map onto the column space.}
+  \item{ms}{The indices of the modes to compute on.}
 }
 
 \value{
-\item{mat}{The inner product of tensors \eqn{X} and \eqn{Y} in the dimensions specified by the vector dims, which is a matrix.}
+Return a matrix, the inner product of tensors \code{X} and \code{Y} on the modes specified by the vector \code{ms}.
+}
+
+\details{
+Two tensors \code{X} and \code{Y} are unfolded into two matrix with the modes in \code{ms} onto the columns. Then implement matrix multiplication on the two matrices. The sizes of the dimensions specified by \code{ms} must match, e.g., the number of columns of the two unfolded matrices must match.
 }
 
 \examples{

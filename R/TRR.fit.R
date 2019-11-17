@@ -1,7 +1,7 @@
 #' @export
 
 # This function gives all the estimation of tensor response regression
-TRR <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, Gamma_init=NULL) {
+TRR.fit <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, Gamma_init=NULL) {
   cl <- match.call()
   method <- match.arg(method)
   if(!is.matrix(Xn)){
@@ -63,7 +63,7 @@ TRR <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, 
       }
 
       idxprod <- (r[i]/n)/prodr
-      YsnYsn <- ttt(Ysn, Ysn, dims=idx)@data*idxprod
+      YsnYsn <- ttt(Ysn, Ysn, ms=idx)@data*idxprod
       U <- YsnYsn - M
 
       if (method == "1D") {
@@ -78,7 +78,7 @@ TRR <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, 
         }else{
           init <- Gamma_init[[i]]
         }
-        Gamma1[[i]] <- OptStiefelGBB(init, opts=NULL, FGfun, M, U)$X
+        Gamma1[[i]] <- OptStiefelGBB(init, opts=NULL, FGfun, M, U)$Gamma
       }
       PGamma[[i]] <- Gamma1[[i]] %*% t(Gamma1[[i]])
     }
@@ -89,7 +89,7 @@ TRR <- function(Xn, Yn, method=c('standard', 'FG', '1D', 'ECD', 'PLS'), u=NULL, 
   m <- Bhat@num_modes
   fitted.values <- rTensor::ttm(Bhat, t(Xn_old), m)
   residuals <- Yn_old - fitted.values
-  output <- list(Xn=Xn_old, Yn=Yn_old, method = method, coefficients=Bhat, Gamma_hat=Gamma1, Sig=Sig, fitted.values = fitted.values, residuals = residuals)
+  output <- list(Xn=Xn_old, Yn=Yn_old, method = method, coefficients=Bhat, Gamma=Gamma1, Sig=Sig, fitted.values = fitted.values, residuals = residuals)
   class(output) <- "Tenv"
   output$call <- cl
   output

@@ -1,9 +1,9 @@
-#' @title Envelope estimation of tensor response regression with the full Grassmannian optimization
+#' @title Envelope estimation of tensor response regression (TRR) with the full Grassmannian optimization
 #' @description This function is used for envelope estimation of tensor response regression with the full Grassmannian (FG) optimization.
 #'
 #' @param Xn The predictor matrix of dimension \eqn{p \times n}.
 #' @param Yn The response tensor instance or dimension \eqn{r_1\times r_2\times\cdots\times r_m \times n}, where \eqn{n} is the sample size.
-#' @param Gamma_init The initial estimation of envelope subspace basis, can be derived from \code{TRR}.
+#' @param Gamma_init The initial estimation of envelope subspace basis, can be derived from \code{TRR.fit}.
 #'
 #' @return
 #' \describe{
@@ -47,7 +47,7 @@
 #' Yn <- Epsilon + rTensor::ttm(B, t(Xn), m+1)
 #'
 #' # use the result of 1D method as the initial value
-#' res_1D = TRR(Xn, Yn, u, method="1D")
+#' res_1D = TRR.fit(Xn, Yn, u, method="1D")
 #' \dontrun{
 #'   res_FG = FG_TRR(Xn, Yn, Gamma_init=res_1D$Gamma_hat)
 #' }
@@ -60,12 +60,12 @@ NULL
 
 #' @rdname TRES-deprecated
 #' @section \code{FG_TRR}:
-#' For \code{FG_TRR}, use \code{\link{TRR}} with \code{method = "FG"}.
+#' For \code{FG_TRR}, use \code{\link{TRR.fit}} with \code{method = "FG"}.
 #'
 #' @export
 
 FG_TRR <- function(Xn, Yn, Gamma_init) {
-  .Deprecated("TRR", package = "TRES")
+  .Deprecated("TRR.fit", package = "TRES")
   ss <- dim(Yn)
   len <- length(ss)
   n <- ss[len]
@@ -104,9 +104,9 @@ FG_TRR <- function(Xn, Yn, Gamma_init) {
         Ysn <- rTensor::ttl(Yn, Sinvhalf, ms=1)
     }
     idxprod <- (r[i]/n)/prodr
-    YsnYsn <- ttt(Ysn, Ysn, dims=idx)@data*idxprod
+    YsnYsn <- ttt(Ysn, Ysn, ms=idx)@data*idxprod
     U <- YsnYsn - M
-    Gamma1[[i]] <- OptStiefelGBB(Gamma_init[[i]], opts=NULL, FGfun, M, U)$X
+    Gamma1[[i]] <- OptStiefelGBB(Gamma_init[[i]], opts=NULL, FGfun, M, U)$Gamma
     PGamma[[i]] <- Gamma1[[i]] %*% t(Gamma1[[i]])
   }
   tp <- ttl(Yn, PGamma, ms=1:m)

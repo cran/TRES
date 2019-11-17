@@ -8,15 +8,15 @@ Estimate the envelope subspace (ManifoldOptim 1D)
 The 1D algorithm to estimate the envelope subspace with specified dimension based on R package "ManifoldOptim".
 }
 \usage{
-manifold1D(M, U, u, params=NULL)
+manifold1D(M, U, u, opts=NULL)
 }
 
 \arguments{
   \item{M}{M matrix in the envelope objective function. A \eqn{p}-by-\eqn{p} positive semi-definite matrix.}
  \item{U}{U matrix in the envelope objective function. A \eqn{p}-by-\eqn{p} positive semi-definite matrix.}
   \item{u}{Dimension of the envelope. An integer between 0 and \eqn{p}.}
-  \item{params}{Option structure with fields:\cr
-            \code{"max_iter"} -- max number of iterations.\cr
+  \item{opts}{Option structure with fields:\cr
+            \code{"maxiter"} -- max number of iterations.\cr
             \code{"tol"} -- Tolerance used to assess convergence. See Huang et al. (2018) for details on
 how this is used.\cr
             \code{"method"} -- Name of optimization method supported by R package \pkg{ManifoldOptim}.
@@ -36,19 +36,17 @@ how this is used.\cr
 
 \code{"check"} -- Should internal manifold object check inputs and print summary message before optimization (TRUE or FALSE).\cr
 
-The default values are: \code{"max_iter"=500; "tol"=1e-08;}\cr
+The default values are: \code{"maxiter"=500; "tol"=1e-08;}\cr
 \code{"method"="RCG"; "check"="False"}.
 }
 }
 
 
 \details{
-Estimate \code{M}-envelope contains \code{span(U)}
-where \code{M > 0} and is symmetric. The
-dimension of the envelope is \code{u}.
+Estimate \code{M}-envelope of \code{span(U)} where \code{M > 0}. The dimension of the envelope is \code{u}.
 }
 \value{
-\item{Ghat}{The orthogonal basis of the envelope subspace with each column represent the sequential direction. For example, the 1st column is the most informative direction.}
+Return the orthogonal basis of the envelope subspace.
 }
 \references{
 Huang, W., Absil, P. A., Gallivan, K. A., & Hand, P. (2018). ROPTLIB: an object-oriented C++ library for optimization on Riemannian manifolds. ACM Transactions on Mathematical Software (TOMS), 44(4), 43.
@@ -61,6 +59,6 @@ Mhat <- data$Mhat
 Uhat <- data$Uhat
 G <- data$Gamma
 
-Ghat_1D <- manifold1D(Mhat, Uhat, u=5, params=NULL)
-subspace(Ghat_1D, G)
+Gamma_1D <- manifold1D(Mhat, Uhat, u=5, opts=NULL)
+subspace(Gamma_1D, G)
 }
