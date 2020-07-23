@@ -2,8 +2,8 @@ Package: TRES
 Type: Package
 Title: Tensor Regression with Envelope Structure and Three Generic
         Envelope Estimation Approaches
-Version: 1.1.1
-Date: 2020-02-04
+Version: 1.1.2
+Date: 2020-07-21
 Authors@R: c(
     person("Wenjing", "Wang", email = "wenjing.wang@stat.fsu.edu", role = c("aut")),
     person("Jing", "Zeng", email = "jing.zeng@stat.fsu.edu", role = c("aut", "cre")),
@@ -13,18 +13,18 @@ License: GPL-3
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-Depends: R (>= 3.5.0), ManifoldOptim
-Imports: MASS, methods, pracma, rTensor, stats
-URL: https://github.com/jerryfsu3333/TRES
-BugReports: https://github.com/jerryfsu3333/TRES/issues
+Depends: R (>= 3.6.0), ManifoldOptim (>= 1.0.0)
+Imports: MASS, methods, pracma (>= 2.2.5), rTensor (>= 1.4), stats
+URL: https://github.com/leozeng15/TRES
+BugReports: https://github.com/leozeng15/TRES/issues
 RcppModules: ManifoldOptim_module
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 NeedsCompilation: no
 Repository: CRAN
 Suggests: testthat (>= 2.1.0)
-Packaged: 2020-02-05 00:56:13 UTC; JingZeng
+Packaged: 2020-07-23 20:33:24 UTC; JingZeng
 Author: Wenjing Wang [aut],
   Jing Zeng [aut, cre],
   Xin Zhang [aut]
 Maintainer: Jing Zeng <jing.zeng@stat.fsu.edu>
-Date/Publication: 2020-02-05 09:50:03 UTC
+Date/Publication: 2020-07-23 21:00:02 UTC
