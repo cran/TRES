@@ -18,6 +18,8 @@ get_ini1D <- function(M, U){
   v1 <- eigen(M)$vectors
   v2 <- eigen(M+U)$vectors
   v <- cbind(v1, v2)
+  index <- v[1,] < 0
+  v[,index] <- -v[,index]
   W0 <- Re(v[, 1]) ## Ensure the real number
   Fw0 <- fun1D(W0, M, U)$F
   for (i in 2:(2*p)) {
@@ -40,24 +42,28 @@ ballGBB1D <- function(M, U, ...) {
   # Options for function OptManiMulitBallGBB
   opts <- list(...)
   W0 <- get_ini1D(M, U)
-  if (is.null(opts$xtol))
-    opts$xtol = 1e-8 else if (opts$xtol < 0 || opts$xtol > 1)
-      opts$xtol = 1e-8
+  if (is.null(opts$xtol) || opts$xtol < 0 || opts$xtol > 1) opts$xtol <- 1e-8
+  if (is.null(opts$gtol) || opts$gtol < 0 || opts$gtol > 1) opts$gtol <- 1e-8
+  if (is.null(opts$ftol) || opts$ftol < 0 || opts$ftol > 1) opts$ftol <- 1e-12
+  # parameters for control the linear approximation in line search
+  if (is.null(opts$rho) || opts$rho < 0 || opts$rho > 1) opts$rho <- 1e-04
+  # factor for decreasing the step size in the backtracking line search
+  if (is.null(opts$eta))
+    opts$eta <- 0.2 else if (opts$eta < 0 || opts$eta > 1)
+      opts$eta <- 0.1
+  # parameters for updating C by HongChao, Zhang
+  if (is.null(opts$gamma) || opts$gamma < 0 || opts$gamma > 1) opts$gamma <- 0.85
+  if (is.null(opts$tau) || opts$tau < 0 || opts$tau > 1) opts$tau <- 1e-03
+  # parameters for the  nonmontone line search by Raydan
+  if (is.null(opts$m)) opts$m <- 10
+  if (is.null(opts$STPEPS)) opts$STPEPS <- 1e-10
+  if (is.null(opts$maxiter) || opts$maxiter < 0 || opts$maxiter > 2^20) opts$maxiter <- 800
+  if (is.null(opts$nt) || opts$nt < 0 || opts$nt > 100) opts$nt <- 5
+  # if (is.null(opts$record)) opts$record <- 0
+  if (is.null(opts$eps)) opts$eps <- 1e-14
 
-
-  if (is.null(opts$gtol))
-    opts$gtol = 1e-8 else if (opts$gtol < 0 || opts$gtol > 1)
-      opts$gtol = 1e-8
-
-  if (is.null(opts$ftol))
-    opts$ftol = 1e-12 else if (opts$ftol < 0 || opts$ftol > 1)
-      opts$ftol = 1e-12
-
-  if (is.null(opts$maxiter))
-    opts$maxiter = 800
-
-  X <- OptManiMulitBallGBB(W0, opts, fun1D, M, U)$X
-  return(X)
+  fit <- OptManiMulitBallGBB(W0, opts, fun1D, M, U)
+  list(X = fit$X, out = fit$out)
 }
 
 ###########################################################################
@@ -138,9 +144,10 @@ OptManiMulitBallGBB <- function(X, opts=NULL, fun, ...) {
   # parameters for the  nonmontone line search by Raydan
   if (is.null(opts$m)) opts$m <- 10
   if (is.null(opts$STPEPS)) opts$STPEPS <- 1e-10
-  if (is.null(opts$maxiter) || opts$maxiter < 0 || opts$maxiter > 2^20) opts$maxiter <- 500
+  if (is.null(opts$maxiter) || opts$maxiter < 0 || opts$maxiter > 2^20) opts$maxiter <- 800
   if (is.null(opts$nt) || opts$nt < 0 || opts$nt > 100) opts$nt <- 5
-  # if (is.null(opts$record)) opts$record <- 0
+  if (is.null(opts$eps)) opts$eps <- 1e-14
+  if (is.null(opts$record)) opts$record <- 0
 
   # copy parameters
   xtol <- opts$xtol
@@ -151,16 +158,15 @@ OptManiMulitBallGBB <- function(X, opts=NULL, fun, ...) {
   STPEPS <- opts$STPEPS
   eta <- opts$eta
   gamma <- opts$gamma
-  # record <- opts$record
-
+  eps <- opts$eps
   nt <- opts$nt
-
   crit <- matrix(1, opts$maxiter, 3)
+  record <- opts$record
 
   # normalize x so that ||x||_2 = 1
-  nrmX <- colSums(X*X)
+  nrmX <- apply(X*X, 2, sum)
   nrmX <- matrix(nrmX, 1, k)
-  if (norm((nrmX-1), type = "F") > 1e-8) {
+  if (sqrt(sum((nrmX-1)^2)) > 1e-8) {
     X <- sweep(X, 2, sqrt(nrmX),"/")
   }
   args = list(X, ...)
@@ -170,33 +176,41 @@ OptManiMulitBallGBB <- function(X, opts=NULL, fun, ...) {
   out$nfe <- 1
 
 
-  Xtg <- colSums(X*g)
+  Xtg <- apply(X*g, 2, sum)
   Xtg <- matrix(Xtg, 1, k)
-  gg <- colSums(g*g)
+  gg <- apply(g*g, 2, sum)
   gg <- matrix(gg, 1, k)
-  XX <- colSums(X*X)
+  XX <- apply(X*X, 2, sum)
   XX <- matrix(XX, 1, k)
   XXgg <- XX*gg
   temp <- sweep(X, 2, Xtg, "*")
   dtX <- matrix(temp, n, k) - g
-  nrmG <- norm(dtX, type = "F")
+  nrmG <- sqrt(sum((dtX)^2))
 
   Q <- 1; Cval <- f; tau <- opts$tau
 
-  # ## print iteration header if debug == 1
-  # if (record >= 1){
-  #     cat(paste('------ Gradient Method with Line search ----- ',"\n"),
-  #         sprintf("%4s %8s %8s %10s %10s", 'Iter', 'tau', 'F(X)', 'nrmG', 'XDiff'))
-  # }
-  # if (record == 10) out$fvec = f
+  ## print iteration header if record >= 1
+  if (record >= 1){
+      cat(paste("\n", '------ Gradient Method with Line search ----- ',"\n"),
+          sprintf("%4s %8s %10s %9s %9s %3s", 'Iter', 'tau', 'F(X)', 'nrmG', 'XDiff', 'nls'), "\n")
+  }
+  if (record == 10) out$fvec = f
+
+  # ##
+  # X_list <- vector("list", opts$maxiter)
+  # XDiff_list <- vector("list", opts$maxiter)
+  # FDiff_list <- vector("list", opts$maxiter)
+  # Q_list <- vector("list", opts$maxiter)
+  # Cval_list <- vector("list", opts$maxiter)
+  # ##
 
   ##main iteration
-  for (itr in 1 : opts$maxiter) {
+  for (itr in 1:opts$maxiter) {
     Xp <- X; fp <- f; gp <- g; dtXP <- dtX
 
     nls <- 1; deriv = rho*nrmG^2
 
-    while (1 > 0) {
+    while (TRUE) {
       ## calculate g, f
       tau2 <- tau/2
       beta <- (1 + (tau2^2)*(-(Xtg^2) + XXgg))
@@ -216,33 +230,35 @@ OptManiMulitBallGBB <- function(X, opts=NULL, fun, ...) {
       nls <- nls + 1
     }
 
-    # if (record == 10)
-    #   out$fvec <- rbind(out$fvec,f)
+    if (record == 10)
+      out$fvec <- rbind(out$fvec,f)
 
-    #Xtg <- sapply(1:k, function(d) sum(X[,d]*g[,d]))
-    Xtg <- colSums(X*g)
+    Xtg <- apply(X*g, 2, sum)
     Xtg <- matrix(Xtg, 1, k)
-    gg <- colSums(g*g)
+    gg <- apply(g*g, 2, sum)
     gg <- matrix(gg, 1, k)
-    XX <- colSums(X*X)
+    XX <- apply(X*X, 2, sum)
     XX <- matrix(XX, 1, k)
     XXgg <- XX*gg
     temp <- sweep(X, 2, Xtg, "*")
     dtX <- matrix(temp, n, k) - g
 
-    nrmG <- norm(dtX, type = "F")
+    nrmG <- sqrt(sum(dtX^2))
     s <- X - Xp
-    XDiff <- norm(s, type = "F")/sqrt(n)
+    XDiff <- sqrt(sum(s^2))/sqrt(n)
     FDiff <- abs(fp - f)/(abs(fp) + 1)
 
-    # if (record >= 1)
-    #   cat(paste('------ Gradient Method with Line search ----- ',"\n"),
-    #       sprintf("%4s %8s %8s %10s %10s %10s", 'Iter', 'tau', 'F(X)', 'nrmG', 'XDiff','nls'))
+    if (record >= 1)
+      # cat(paste('------ Gradient Method with Line search ----- ',"\n"),
+      #     sprintf("%4s %8s %8s %10s %10s %10s", 'Iter', 'tau', 'F(X)', 'nrmG', 'XDiff','nls'))
+      cat(sprintf('%4d  %3.2e  %3.2e  %3.2e  %3.2e %2d',
+              itr, tau, f, nrmG, XDiff, nls), "\n")
 
     crit[itr,] <- cbind(nrmG, XDiff, FDiff)
     r <- length((itr - min(nt, itr)+1):itr)
     temp1 <- matrix(crit[(itr - min(nt, itr)+1):itr,], r, 3)
-    mcrit <- colMeans(temp1)
+    mcrit <- apply(temp1, 2, mean)
+
 
     if ((XDiff < xtol && FDiff < ftol) || nrmG < gtol
         || all(mcrit[2:3] < 10 * c(xtol, ftol))) {
@@ -268,19 +284,19 @@ OptManiMulitBallGBB <- function(X, opts=NULL, fun, ...) {
   if (itr >= opts$maxiter)
     out$msg <- "exceed max iteration"
 
-  Xn <- colSums(X*X)
+  Xn <- apply(X*X, 2, sum)
   Xn <- matrix(Xn, 1, k)
-  out$feasi <- norm((Xn - 1),type = "2")
+  out$feasi <- svd(Xn - 1)$d[1]
 
-  if (out$feasi > 1e-14) {
-    nrmX <- colSums(X*X)
+  if (out$feasi > eps) {
+    nrmX <- apply(X*X, 2, sum)
     X <- sweep(X, 2, sqrt(nrmX),"/")
     args = list(X, ...)
     eva <- do.call(fun, args)
     f <- eva$F; g <- as.matrix(eva$G)
     out$nfe <- out$nfe + 1
-    nrmX.n <- colSums(X*X)
-    out$feasi <- norm((nrmX.n - 1), type = "2" )
+    nrmX.n <- apply(X*X, 2, sum)
+    out$feasi <- svd(nrmX.n - 1)$d[1]
   }
 
   out$nrmG <- nrmG

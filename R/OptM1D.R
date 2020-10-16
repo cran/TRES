@@ -49,7 +49,7 @@ OptM1D <- function(M, U, u, ...) {
     G <- matrix(0, p, u)
     G0 <- diag(p)
     for(k in 1:u){
-      gk <- ballGBB1D(Mnew, Unew, ...)
+      gk <- ballGBB1D(Mnew, Unew, ...)$X
       G[, k] <- G0 %*% gk
       G0 <- qr.Q(qr(G[, 1:k]),complete=T)[,(k+1):p]
       Mnew <- t(G0) %*% M %*% G0

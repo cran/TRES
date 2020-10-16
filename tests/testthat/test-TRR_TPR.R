@@ -1,7 +1,6 @@
 context("Test TRR and TPR with .sim function, bat and square.")
 
 testthat::skip('skip')
-## Set up RNG kind
 RNGkind("L'Ecuyer-CMRG")
 
 test_that("TRR works with .sim function", {
