@@ -1,3 +1,9 @@
+# TRES 1.1.5
+
+## Major changes
+- Revise the help documentation for the function `OptStiefelGBB.R`.
+- The Journal of Statistical Software paper accompanying this package has been published.
+
 # TRES 1.1.4
 
 ## Major changes
